@@ -55,9 +55,9 @@ export const HeaderClient: React.FC = () => {
               ))}
             </nav>
 
-            <a href="/" className="flex items-center justify-center" aria-label="City Health Desk home">
+            <Link href="/" className="flex items-center justify-center" aria-label="City Health Desk home">
               <Logo />
-            </a>
+            </Link>
 
             <div className="flex items-center justify-end gap-8">
               {NAV_RIGHT.map((link) => (
@@ -79,9 +79,9 @@ export const HeaderClient: React.FC = () => {
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <a href="/" className="absolute left-1/2 -translate-x-1/2" aria-label="City Health Desk home">
+            <Link href="/" className="absolute left-1/2 -translate-x-1/2" aria-label="City Health Desk home">
               <Logo className="text-lg" />
-            </a>
+            </Link>
             <Link href="/search" className="p-1.5" aria-label="Search articles">
               <Search className="w-[18px] h-[18px] text-foreground" strokeWidth={1.5} />
             </Link>
