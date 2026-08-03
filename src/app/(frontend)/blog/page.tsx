@@ -39,10 +39,10 @@ export default async function Page() {
           The Journal
         </p>
         <h1 className="editorial-heading text-3xl sm:text-4xl text-foreground mb-3">
-          Evidence-Based Wellness
+          Health, Clearly Explained
         </h1>
         <p className="text-muted-foreground max-w-2xl leading-relaxed">
-          Expert guides on supplements, nutrition, and daily wellness practices.
+          Clear, practical health guides — researched, sourced and written to be useful.
         </p>
       </div>
 

@@ -43,7 +43,7 @@ export default async function Page({ params: paramsPromise }: Args) {
           The Journal
         </p>
         <h1 className="editorial-heading text-3xl sm:text-4xl text-foreground">
-          Evidence-Based Wellness
+          Health, Clearly Explained
         </h1>
       </div>
 
