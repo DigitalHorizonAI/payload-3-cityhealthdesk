@@ -1,6 +1,6 @@
 # Publishing articles over the API
 
-For an external tool that writes articles into the Digital Horizon blog.
+For an external tool that writes articles into the CITYHEALTHDESK blog.
 
 ## Authentication
 
@@ -11,10 +11,9 @@ collection name and is part of the format:
 Authorization: apiClients API-Key <key>
 ```
 
-Base URL: `https://cms.digital-horizon.io`
+Base URL: `https://cms.cityhealthdesk.com`
 
-A key that is disabled or revoked returns `403`. Keys are not currently
-reachable from `digital-horizon.io` — use the CMS host directly.
+A key that is disabled or revoked returns `403`.
 
 ## What a key may do
 
@@ -130,15 +129,10 @@ Use the returned `doc.id` as `meta.image` when creating the article.
 
 ## Where an article appears
 
-Once published it is live at `https://digital-horizon.io/blog/<slug>`, listed
-on `/blog`, and included in `https://digital-horizon.io/blog-sitemap.xml`.
-
-One delay is normal and is not a fault: the blog is served through a CDN proxy,
-so a change can take **up to about ten minutes** to appear on
-`digital-horizon.io/blog` even though it is immediate on
-`cms.digital-horizon.io/blog`. When checking whether something worked, look at
-the CMS host first — that separates "it did not publish" from "the cache has
-not caught up".
+Once published it is live at `https://cms.cityhealthdesk.com/blog/<slug>`,
+listed on `/blog`, and included in `https://cms.cityhealthdesk.com/sitemap.xml`.
+There is no proxy layer in front of this site, so publishing takes effect
+immediately on the host itself.
 
 The sitemap updates as soon as an article is published, unpublished, renamed or
 deleted, so it needs no waiting.
