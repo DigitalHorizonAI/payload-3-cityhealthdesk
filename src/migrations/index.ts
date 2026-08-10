@@ -8,6 +8,7 @@ import * as migration_20260728_120000_drop_comments from './20260728_120000_drop
 // collection has no Logo Cloud Grid block; the tables it created sit unused.
 import * as migration_20260728_181752_add_logo_cloud_grid_block from './20260728_181752_add_logo_cloud_grid_block';
 import * as migration_20260729_071028_add_api_clients from './20260729_071028_add_api_clients';
+import * as migration_20260810_095737_add_user_roles from './20260810_095737_add_user_roles';
 
 export const migrations = [
   {
@@ -39,5 +40,10 @@ export const migrations = [
     up: migration_20260729_071028_add_api_clients.up,
     down: migration_20260729_071028_add_api_clients.down,
     name: '20260729_071028_add_api_clients',
+  },
+  {
+    up: migration_20260810_095737_add_user_roles.up,
+    down: migration_20260810_095737_add_user_roles.down,
+    name: '20260810_095737_add_user_roles'
   },
 ];
