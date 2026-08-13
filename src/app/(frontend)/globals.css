@@ -4,42 +4,50 @@
 
 @layer base {
   /*
-   * The editorial palette, carried from the sister blog CMS until this site
-   * has a design of its own: warm paper ground, near-black ink, hairline borders doing the
-   * structural work, and a muted green reserved for success states.
+   * City Health Desk's own palette, replacing the warm editorial one carried
+   * from the sister blog CMS while this site had no design of its own.
+   *
+   * Cool, close to white, with slate ink and a calm clinical teal. It reads as
+   * a health counter rather than a magazine, and it deliberately does NOT look
+   * like 2ahealthylife — two of the client's sites in the same niche should not
+   * be visually interchangeable.
+   *
+   * The structure is unchanged and doing the real work: hairline borders,
+   * square corners, no shadows.
+   *
    * Tailwind wraps every one of these in hsl(), so they must stay as bare
    * HSL triplets — a hex value here silently produces no colour at all.
    */
   :root {
-    --background: 40 25% 97%; /* #F9F6F0 warm paper */
-    --foreground: 30 10% 12%; /* #211F1C ink */
+    --background: 200 24% 98%; /* #F7FAFB cool paper */
+    --foreground: 205 28% 14%; /* #1A252B slate ink */
 
-    --card: 40 20% 99%;
-    --card-foreground: 30 10% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 205 28% 14%;
 
-    --popover: 40 20% 99%;
-    --popover-foreground: 30 10% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 205 28% 14%;
 
-    --primary: 30 10% 12%;
-    --primary-foreground: 40 25% 97%;
+    --primary: 205 28% 14%;
+    --primary-foreground: 200 24% 98%;
 
-    --secondary: 35 20% 93%;
-    --secondary-foreground: 30 10% 12%;
+    --secondary: 200 22% 94%;
+    --secondary-foreground: 205 28% 14%;
 
-    --muted: 35 15% 92%;
-    --muted-foreground: 30 8% 46%; /* #7E7770 */
+    --muted: 200 20% 93%;
+    --muted-foreground: 205 12% 42%; /* #5E6B72 */
 
-    /* Muted green. The main site uses it only as a success/positive accent
-       (coupons, in-stock, confirmations) — never as a brand colour. */
-    --accent: 145 20% 38%; /* #4E7A5F */
-    --accent-foreground: 40 25% 97%;
+    /* Clinical teal. Used for emphasis and links, never as a large fill —
+       at this saturation a full-bleed panel of it reads as a pharmacy sign. */
+    --accent: 188 62% 28%; /* #1B6874 */
+    --accent-foreground: 200 24% 98%;
 
     --destructive: 0 60% 50%;
-    --destructive-foreground: 40 25% 97%;
+    --destructive-foreground: 200 24% 98%;
 
-    --border: 35 15% 88%; /* #E5DFD7 */
-    --input: 35 15% 88%;
-    --ring: 30 10% 12%;
+    --border: 200 18% 88%; /* #DCE3E6 */
+    --input: 200 18% 88%;
+    --ring: 188 62% 28%;
 
     /* 4px — effectively square. The design uses borders, not rounding. */
     --radius: 0.25rem;
