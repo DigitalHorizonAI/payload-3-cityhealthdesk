@@ -11,7 +11,7 @@ collection name and is part of the format:
 Authorization: apiClients API-Key <key>
 ```
 
-Base URL: `https://cms.cityhealthdesk.com`
+Base URL: `https://cityhealthdesk.com`
 
 A key that is disabled or revoked returns `403`.
 
@@ -129,8 +129,8 @@ Use the returned `doc.id` as `meta.image` when creating the article.
 
 ## Where an article appears
 
-Once published it is live at `https://cms.cityhealthdesk.com/blog/<slug>`,
-listed on `/blog`, and included in `https://cms.cityhealthdesk.com/sitemap.xml`.
+Once published it is live at `https://cityhealthdesk.com/blog/<slug>`,
+listed on `/blog`, and included in `https://cityhealthdesk.com/sitemap.xml`.
 There is no proxy layer in front of this site, so publishing takes effect
 immediately on the host itself.
 

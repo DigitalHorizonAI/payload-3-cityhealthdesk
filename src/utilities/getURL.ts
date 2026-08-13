@@ -17,11 +17,11 @@ export const getServerSideURL = () => {
 /**
  * Where the public site lives, as visitors and search engines see it.
  *
- * Distinct from getServerSideURL(): if the app is ever reachable on more
- * than one hostname (today it is cms.cityhealthdesk.com only; the apex takes
- * over when the full site launches), canonical URLs, Open Graph tags and the
- * sitemap must all point at the public one, or search engines index the
- * wrong copy.
+ * Distinct from getServerSideURL(): the app is reachable on more than one
+ * hostname — the railway.app host serves it today while the apex DNS record
+ * is outstanding, and cityhealthdesk.com takes over once that lands. Canonical
+ * URLs, Open Graph tags and the sitemap must all point at the public one, or
+ * search engines index the wrong copy. robots.txt keys off the same value.
  *
  * In production this THROWS rather than falling back. The fallback chain used
  * to end at http://localhost:3000, and a build with the variable missing
@@ -37,7 +37,7 @@ export const getPublicSiteURL = () => {
 
   if (!url && process.env.NODE_ENV === 'production') {
     throw new Error(
-      'NEXT_PUBLIC_SITE_URL is not set. It is the public origin (e.g. https://cms.cityhealthdesk.com) ' +
+      'NEXT_PUBLIC_SITE_URL is not set. It is the public origin (e.g. https://cityhealthdesk.com) ' +
         'used for canonical URLs, Open Graph tags and the sitemap. Set it on the Railway ' +
         'service — it is read at build time, so a rebuild is needed after changing it.',
     )

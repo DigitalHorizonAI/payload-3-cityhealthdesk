@@ -3,11 +3,11 @@ declare global {
     interface ProcessEnv {
       PAYLOAD_SECRET: string
       DATABASE_URI: string
-      /** This app's own origin, e.g. https://cms.cityhealthdesk.com */
+      /** This app's own origin, e.g. https://cityhealthdesk.com */
       NEXT_PUBLIC_SERVER_URL: string
       /**
-       * The public origin visitors and search engines see — the CMS host
-       * today, https://cityhealthdesk.com once the full site launches there.
+       * The public origin visitors and search engines see — the railway.app
+       * host today, https://cityhealthdesk.com once its DNS record lands.
        * Required in production — getPublicSiteURL()
        * throws without it. Read at build time, so changing it needs a rebuild.
        */

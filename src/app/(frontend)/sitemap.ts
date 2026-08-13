@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { getPublicSiteURL } from '@/utilities/getURL'
 import { getDocPath } from '@/utilities/collectionPrefixMap'
+import { CATEGORIES, PRODUCTS } from '@/shop'
 
 /**
  * Lists published articles so search engines can discover them without waiting
@@ -10,8 +11,9 @@ import { getDocPath } from '@/utilities/collectionPrefixMap'
  *
  * URLs use the public origin — see getPublicSiteURL().
  *
- * Scope: articles only, until the full site lands in this app and its pages
- * earn entries of their own.
+ * Scope: the storefront (home, shop, the four categories, every product) plus
+ * every published article. The `pages` collection stays out — see the note at
+ * the bottom.
  */
 export const revalidate = 3600
 
@@ -30,8 +32,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   })
 
   const entries: MetadataRoute.Sitemap = [
+    { url: siteURL, changeFrequency: 'weekly', priority: 1 },
+    { url: `${siteURL}/shop`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${siteURL}/blog`, changeFrequency: 'daily', priority: 0.8 },
   ]
+
+  // The storefront. A code constant rather than a query, so unlike the
+  // articles below it cannot go stale between deploys — if a product is in
+  // src/shop.ts it is in the sitemap, and there is no third state.
+  for (const category of CATEGORIES) {
+    entries.push({
+      url: `${siteURL}/shop/${category.slug}`,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    })
+  }
+
+  for (const product of PRODUCTS) {
+    entries.push({
+      url: `${siteURL}/products/${product.slug}`,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    })
+  }
 
   for (const doc of posts.docs) {
     if (!doc.slug) continue
