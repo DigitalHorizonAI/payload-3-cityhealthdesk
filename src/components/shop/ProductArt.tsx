@@ -20,8 +20,12 @@ import type { ArtToken, CategorySlug } from '@/shop'
  * three props, so nothing else changes.
  */
 
-/** Base hue per category, so a category reads as a family at a glance. */
-const HUES: Record<CategorySlug, number> = {
+/**
+ * Base hue per category, so a category reads as a family at a glance.
+ * Exported because the homepage tints its category cards with the same values —
+ * a category must not be one colour in the shop and another on the front page.
+ */
+export const HUES: Record<CategorySlug, number> = {
   'home-monitoring': 196,
   'first-aid': 8,
   'daily-living': 264,

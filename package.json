@@ -22,7 +22,8 @@
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:manual": "cross-env PLAYWRIGHT_SLOW_MO=750 E2E_MANUAL_REVIEW=true playwright test --headed --workers=1",
-    "check:storefront": "node scripts/check-storefront.mjs"
+    "check:storefront": "node scripts/check-storefront.mjs",
+    "check:covers": "node scripts/check-article-covers.mjs"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.85.2",
