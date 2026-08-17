@@ -139,8 +139,13 @@
   .article-prose p {
     @apply mb-5 leading-relaxed;
   }
+  /*
+   * The accent's stated purpose, finally used: "emphasis and links" per the
+   * palette note above. Until now --accent was defined and rendered nowhere,
+   * so its only effect on the site was the focus ring.
+   */
   .article-prose a {
-    @apply text-foreground underline underline-offset-4 decoration-foreground/40 hover:decoration-foreground transition-colors font-medium;
+    @apply text-accent underline underline-offset-4 decoration-accent/40 hover:decoration-accent transition-colors font-medium;
   }
   .article-prose strong {
     @apply font-semibold text-foreground;

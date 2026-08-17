@@ -8,6 +8,7 @@ import React, { Fragment } from 'react'
 import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
+import { PostArt } from '@/components/PostArt'
 
 export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'publishedAt'>
 
@@ -42,12 +43,19 @@ export const Card: React.FC<{
       ref={card.ref}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-secondary mb-4">
-        {metaImage && typeof metaImage !== 'string' && (
+        {metaImage && typeof metaImage !== 'string' ? (
           <Media
             fill
             imgClassName="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             resource={metaImage}
             size="33vw"
+          />
+        ) : (
+          // Articles arriving from the SEO content tool carry no media, so
+          // without this the panel above is an empty grey box on every card.
+          <PostArt
+            slug={slug ?? ''}
+            className="absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-[1.03]"
           />
         )}
       </div>

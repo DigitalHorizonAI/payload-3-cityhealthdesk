@@ -4,6 +4,7 @@ import React from 'react'
 import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
+import { PostArt } from '@/components/PostArt'
 
 /**
  * The main site's article header, ported from its ArticlePage.tsx: category
@@ -84,11 +85,19 @@ export const PostHero: React.FC<{
             </div>
           </div>
 
-          {metaImage && typeof metaImage !== 'string' && (
-            <div className="relative overflow-hidden bg-secondary aspect-[16/9] mb-10">
+          {/*
+            An article published by the SEO content tool has no media, so the
+            cover falls back to generated art rather than the header simply
+            having no image at all. Same panel the cards use, so an article
+            looks the same in the listing and on its own page.
+          */}
+          <div className="relative overflow-hidden bg-secondary aspect-[16/9] mb-10">
+            {metaImage && typeof metaImage !== 'string' ? (
               <Media fill imgClassName="object-cover" resource={metaImage} />
-            </div>
-          )}
+            ) : (
+              <PostArt slug={post.slug ?? ''} className="absolute inset-0 h-full w-full" />
+            )}
+          </div>
         </div>
       </div>
     </div>
