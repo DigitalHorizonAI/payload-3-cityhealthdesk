@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 
 import { Card } from '@/components/Card'
-import { PostArt } from '@/components/PostArt'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { categorySurface, HUES } from '@/components/shop/ProductArt'
 import { CATEGORIES, featuredProducts, PRODUCTS } from '@/shop'
@@ -86,9 +86,25 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Decorative, and the same drawn language as the product panels. */}
+          {/*
+            This was an abstract SVG bar chart standing in for imagery the site
+            did not have, which is what "generate some images for the website"
+            was about. It is a photograph now — see scripts/fetch-photos.mjs for
+            where it came from and under what licence.
+
+            ⚠️ Not `priority`: it is below the headline in source order and the
+            headline is the LCP element, so preloading this would compete with
+            the text for bandwidth on a cold load.
+          */}
           <div className="relative hidden aspect-[4/3] overflow-hidden border border-border md:block">
-            <PostArt slug="city-health-desk" className="absolute inset-0 h-full w-full" />
+            <Image
+              src="/photos/hero-home-health.webp"
+              alt="An older woman taking an older man's blood pressure with a home monitor, seated together in a living room."
+              width={1400}
+              height={1050}
+              sizes="(min-width: 768px) 50vw, 100vw"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
           </div>
         </div>
       </section>
