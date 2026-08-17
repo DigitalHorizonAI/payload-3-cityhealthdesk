@@ -57,6 +57,10 @@ export default {
           foreground: 'hsl(var(--accent-foreground))',
         },
         background: 'hsl(var(--background))',
+        band: {
+          DEFAULT: 'hsl(var(--band))',
+          muted: 'hsl(var(--band-muted))',
+        },
         border: 'hsla(var(--border))',
         card: {
           DEFAULT: 'hsl(var(--card))',

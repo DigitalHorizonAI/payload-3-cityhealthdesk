@@ -7,7 +7,7 @@ import React from 'react'
 import { Card } from '@/components/Card'
 import { PostArt } from '@/components/PostArt'
 import { ProductCard } from '@/components/shop/ProductCard'
-import { HUES } from '@/components/shop/ProductArt'
+import { categorySurface, HUES } from '@/components/shop/ProductArt'
 import { CATEGORIES, featuredProducts, PRODUCTS } from '@/shop'
 import { getPublicSiteURL } from '@/utilities/getURL'
 
@@ -57,7 +57,7 @@ export default async function HomePage() {
         leaving the right half of the tallest section on the site literally
         blank. It is now one half of a two-column grid.
       */}
-      <section className="border-b border-border bg-secondary/40">
+      <section className="border-b border-border bg-band">
         <div className="container grid grid-cols-1 items-center gap-12 py-16 md:grid-cols-2 md:py-24">
           <div className="max-w-2xl">
             <p className="mb-4 text-xs uppercase tracking-[0.2em] text-accent">
@@ -94,37 +94,41 @@ export default async function HomePage() {
       </section>
 
       {/*
-        Categories. These were four white rectangles on near-white paper. They
-        now carry the same per-category hue the product panels use (HUES, in
-        ProductArt), so a category reads as one family across the whole site
-        rather than only inside the shop. Tint and rule only — the type stays on
-        the ink colour, which keeps the contrast the palette was checked at.
+        Categories. These were four white rectangles on near-white paper, and
+        then four rectangles tinted two points off the page — which is what the
+        client was looking at when he said the site had no colour on it. The tint
+        now clears the page by eight points and the type sits on the category's
+        own ink rather than on --muted-foreground, because deepening the tint
+        alone would have dropped the tagline below WCAG AA. Both halves come from
+        `categorySurface` and both are asserted by pnpm check:covers.
       */}
       <section className="container py-16">
         <h2 className="editorial-heading mb-8 text-2xl">Where to start</h2>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {CATEGORIES.map((category) => {
-            const hue = HUES[category.slug]
+            const surface = categorySurface(HUES[category.slug])
 
             return (
               <Link
                 key={category.slug}
                 href={`/shop/${category.slug}`}
                 className="group flex flex-col border p-6 transition-colors"
-                style={{
-                  backgroundColor: `hsl(${hue} 34% 96%)`,
-                  borderColor: `hsl(${hue} 26% 86%)`,
-                }}
+                style={{ backgroundColor: surface.background, borderColor: surface.borderColor }}
               >
                 <span
                   aria-hidden="true"
                   className="mb-4 block h-1 w-10"
-                  style={{ backgroundColor: `hsl(${hue} 44% 34%)` }}
+                  style={{ backgroundColor: surface.bar }}
                 />
-                <h3 className="editorial-heading mb-2 text-xl group-hover:underline">
+                <h3
+                  className="editorial-heading mb-2 text-xl group-hover:underline"
+                  style={{ color: surface.heading }}
+                >
                   {category.name}
                 </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{category.tagline}</p>
+                <p className="text-sm leading-relaxed" style={{ color: surface.body }}>
+                  {category.tagline}
+                </p>
               </Link>
             )
           })}
@@ -151,7 +155,7 @@ export default async function HomePage() {
 
       {/* Latest articles — the only part of this page that reads the CMS */}
       {posts.docs.length > 0 && (
-        <section className="border-t border-border bg-secondary/40">
+        <section className="border-t border-border bg-band-muted">
           <div className="container py-16">
             <div className="mb-8 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-border pb-3">
               <h2 className="editorial-heading text-2xl">From the journal</h2>

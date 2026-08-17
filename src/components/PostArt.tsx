@@ -103,9 +103,14 @@ export const PostArt = ({ slug, className }: { slug: string; className?: string 
   const hue = HUES[hueIndex]
   const figure = FIGURES[figureIndex] ?? FIGURES[0]
 
-  const ground = `hsl(${hue} 30% 94%)`
+  // 94% was near-white, so an article card read as a blank rectangle on a 98%
+  // page. 88% is six points clear of --background and check-article-covers.mjs
+  // asserts it. This is the ground behind every card on /blog — the page the
+  // client linked when he said the site was empty — so it is the colour he sees
+  // there the day articles land. Ink stays dark: see the note in ProductArt.
+  const ground = `hsl(${hue} 30% 88%)`
   const ink = `hsl(${hue} 40% 32%)`
-  const rule = `hsl(${hue} 24% 86%)`
+  const rule = `hsl(${hue} 24% 80%)`
   // Unique per hue/figure pair, which is all that can collide on one page.
   const gridId = `post-grid-${hueIndex}-${figureIndex}`
 

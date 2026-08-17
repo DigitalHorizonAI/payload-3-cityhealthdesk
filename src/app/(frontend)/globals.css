@@ -34,6 +34,21 @@
     --secondary: 200 22% 94%;
     --secondary-foreground: 205 28% 14%;
 
+    /*
+     * The two full-width bands on the homepage.
+     *
+     * They were `bg-secondary/40`, which resolves to about 97% lightness on a
+     * 98% page — the tallest section on the site was, measurably, white. The
+     * client's report was "overall the website still look pure white", and this
+     * is most of what he was looking at. Petrol rather than neutral grey, so the
+     * top of the page belongs to the same family as the Home monitoring card.
+     *
+     * Tokens rather than inline values because check-article-covers.mjs asserts
+     * both clear --background by a real margin, and it reads them from here.
+     */
+    --band: 196 34% 91%;
+    --band-muted: 196 26% 92%;
+
     --muted: 200 20% 93%;
     --muted-foreground: 205 12% 42%; /* #5E6B72 */
 

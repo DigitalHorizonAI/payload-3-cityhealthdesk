@@ -33,6 +33,42 @@ export const HUES: Record<CategorySlug, number> = {
 }
 
 /**
+ * The whole painted surface of a category card — fill, rule, and the two ink
+ * weights that sit on it.
+ *
+ * ## Why the card is dark
+ *
+ * It was a pale tint with dark text, and it did not work: `hsl(h 34% 96%)` on a
+ * 98% page is two points of lightness, and the client's verdict on the live site
+ * was that there was no colour on it at all. The obvious repair — deepen the
+ * tint — has a hard ceiling, because the tagline rendered in
+ * `--muted-foreground` measures 4.77:1 against the old fill and drops to about
+ * 4.25:1 by 90%. Under AA. So pale-with-dark-text could be visible or it could
+ * be accessible, not both.
+ *
+ * Going past the midpoint removes the trade instead of optimising inside it.
+ * At 26% lightness with near-white ink the worst pairing across all four hues is
+ * about 5.8:1, so contrast stops constraining the design and the colour can be
+ * as loud as it needs to be. Chosen off a rendered swatch of three depths rather
+ * than from a number: 38% was measured at 3.48:1 and rejected, 18% read as four
+ * dark rectangles rather than four colours.
+ *
+ * ⚠️ `bar` LIGHTENS. It was a dark rule for contrast against a pale tint; on a
+ * dark card the same value is invisible. Anything added here has to pick its
+ * side of the fill deliberately.
+ *
+ * `scripts/check-article-covers.mjs` reads this function and asserts both
+ * properties — separation from the page, and AA for both inks — per hue.
+ */
+export const categorySurface = (hue: number) => ({
+  background: `hsl(${hue} 45% 26%)`,
+  borderColor: `hsl(${hue} 50% 20%)`,
+  bar: `hsl(${hue} 55% 62%)`,
+  heading: `hsl(${hue} 30% 97%)`,
+  body: `hsl(${hue} 20% 88%)`,
+})
+
+/**
  * One line drawing per product, on a 92×92 field. Stroke colour, width and
  * linecaps are set once on the wrapping <g>, so a glyph is pure geometry.
  */
@@ -136,9 +172,14 @@ export const ProductArt = ({
   className?: string
 }) => {
   const hue = HUES[category]
-  const ground = `hsl(${hue} 34% 94%)`
+  // 94% was near-white and read as an empty tile on a near-white page; 88% is
+  // six points clear of --background, which check-article-covers.mjs asserts.
+  // ⚠️ Deliberately NOT taken as dark as the category cards. A thin line glyph
+  // on a dark ground reads as a broken image, which is the exact failure this
+  // component exists to avoid — so the ground moves and the ink stays dark.
+  const ground = `hsl(${hue} 34% 88%)`
   const ink = `hsl(${hue} 44% 30%)`
-  const rule = `hsl(${hue} 26% 85%)`
+  const rule = `hsl(${hue} 26% 80%)`
   const gridId = `grid-${art}`
 
   return (

@@ -10,8 +10,12 @@ export const SITE = {
   description: 'City Health Desk — clear, practical health guides and resources.',
   /**
    * Path to the default social sharing image, relative to the public origin.
-   * No such asset exists yet — the site has no brand imagery until the
-   * full-site design lands. Scrapers skip a 404 image; nothing breaks.
+   *
+   * This said "no such asset exists yet" for weeks while every page advertised
+   * the path regardless, so every link shared of this site came through with no
+   * preview card — scrapers skip a 404 image silently. The file now exists:
+   * `scripts/generate-og-image.mjs` draws it and the output is committed.
+   * `pnpm check:covers` fails if any advertised image goes missing again.
    */
   defaultOGImage: '/og-default.webp',
 } as const
