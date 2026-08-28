@@ -13,9 +13,13 @@
  * `content` is a Lexical richText field, so a string is rejected with
  * `400 "Content > Content" — "This field is required."` — an error that points
  * at a missing field when the real problem is a format mismatch. The hook
- * converts Markdown on the way in. If it stops being attached, or stops
- * producing real headings and lists, every article the tool publishes either
- * 400s or lands as one flat blob of literal `##` and `-` characters.
+ * converts Markdown *or* HTML on the way in. If it stops being attached, or
+ * stops producing real headings and lists, every article the tool publishes
+ * either 400s or lands as one flat blob of literal `##` and `-` characters.
+ *
+ * It does NOT cover link safety — see the note at section 3c. This site serves
+ * the raw Lexical tree from /api/articles rather than HTML, so the only render
+ * path is a React component this script cannot mount.
  *
  * ## Why it asserts on headings and lists specifically
  *
@@ -99,23 +103,100 @@ check(
   'the `##` did not become an h2 — the editor config is probably the wrong one',
 )
 
-// 3 — HTML is refused loudly, naming the fix. Silently feeding HTML to a
-// Markdown parser stores mangled content and returns 201, which looks like
-// success to everyone including us.
-let htmlRejected = false
-let htmlMessage = ''
-try {
-  await run('<h2>A section</h2><p>Some prose.</p>')
-} catch (error) {
-  htmlRejected = true
-  htmlMessage = error instanceof Error ? error.message : String(error)
-}
-check('html', htmlRejected, 'an HTML string was accepted and parsed as Markdown')
+// 3 — HTML converts too. The generator emits HTML whatever the connection
+// setting says, so refusing it refused every article. Asserted the same way as
+// Markdown: it is the *shape* of the result that catches a wrong editor config,
+// not the fact that something came back.
+const fromHtml = (await run(
+  '<h1>Title</h1><p>Some prose.</p><h2>A section</h2><ul><li>first</li><li>second</li></ul>',
+)) as { root?: { children?: { tag?: string; type?: string }[] } }
+
+const htmlTypes = fromHtml?.root?.children?.map((child) => child.type) ?? []
+check('html', htmlTypes.includes('heading'), `no heading node from HTML — got [${htmlTypes}]`)
+check('html', htmlTypes.includes('list'), `no list node from HTML — got [${htmlTypes}]`)
 check(
   'html',
-  htmlMessage.includes('Markdown'),
-  `the rejection does not name the fix: ${htmlMessage || '(no message)'}`,
+  fromHtml?.root?.children?.some((child) => child.type === 'heading' && child.tag === 'h2') ?? false,
+  'the <h2> did not become an h2 heading — the editor config is probably the wrong one',
 )
+
+// 3b — a real generated article, not a toy string. These are the constructs the
+// article writer actually produces, and the two that the repo's other HTML
+// parser (scripts/reimport-blog-bodies.ts) throws on: a bare <table> with no
+// div.table-scroll wrapper, and a top-level <img>. Measured against a real
+// article on 28 Aug: every one of these survives, and the image does not.
+const REAL_SHAPE = [
+  '<p>Ever asked for a quote and been baffled by the answers?</p>',
+  '<img src="https://newwebsite.builders/images/a.webp" alt="A calculator" />',
+  '<h2>What drives the price</h2>',
+  '<p>One person says <strong>$500</strong>, another says <em>$50,000</em>.</p>',
+  '<h3>Scope</h3>',
+  '<ul><li>Pages</li><li>Features</li></ul>',
+  '<blockquote><p>Cheap work is not good.</p></blockquote>',
+  '<table><thead><tr><th>Tier</th><th>Cost</th></tr></thead>',
+  '<tbody><tr><td>Basic</td><td>$500</td></tr></tbody></table>',
+].join('')
+
+const real = (await run(REAL_SHAPE)) as { root?: { children?: { tag?: string; type?: string }[] } }
+const realTypes = (real?.root?.children ?? []).map((child) =>
+  child.type === 'heading' ? `heading:${child.tag}` : String(child.type),
+)
+for (const expected of ['heading:h2', 'heading:h3', 'list', 'quote', 'paragraph']) {
+  check('real-article', realTypes.includes(expected), `no ${expected} — got [${realTypes}]`)
+}
+
+// KNOWN CEILING: `<table>` is NOT in this list. This site's content editor does
+// not register EXPERIMENTAL_TableFeature, so a table converts to one paragraph
+// per cell — the words survive, the grid does not. Asserted rather than
+// ignored, because the article writer does produce comparison tables.
+//
+// Adding the feature here would make it WORSE before it made it better:
+// components/RichText/serialize.tsx has no `table` case, so its switch falls
+// through to `default: return null` and a real table node would render as
+// nothing on /blog/[slug]. Fix the serializer first, then enable the feature.
+check(
+  'known-ceiling',
+  !realTypes.includes('table'),
+  'a <table> now produces a table node — if EXPERIMENTAL_TableFeature was enabled, ' +
+    'serialize.tsx needs a table case in the same change or tables render as nothing',
+)
+
+// Bold and italic are the only inline formats the article writer uses. Assert
+// the two we rely on actually carry their format bits, so a converter change
+// that flattened them would be caught here rather than on a live article.
+const textFormats = new Set<number>()
+const collect = (node: { type?: string; format?: number; children?: unknown[] }) => {
+  if (node?.type === 'text') textFormats.add(node.format ?? 0)
+  for (const child of (node?.children ?? []) as typeof node[]) collect(child)
+}
+for (const child of (real?.root?.children ?? []) as Parameters<typeof collect>[0][]) collect(child)
+check('real-article', textFormats.has(1), 'the <strong> did not produce a BOLD text node')
+check('real-article', textFormats.has(2), 'the <em> did not produce an ITALIC text node')
+
+// KNOWN CEILING, asserted so it stays a decision rather than a surprise: the
+// content field registers no upload feature, so an <img> has no importer and is
+// dropped. If this ever starts passing, images began surviving and the warning
+// in the hook should go.
+const imageNodes = realTypes.filter((type) => type === 'upload' || type === 'block').length
+check(
+  'known-ceiling',
+  imageNodes === 0,
+  `an <img> now produces a node (${imageNodes}) — images may be supported; revisit the hook's warning`,
+)
+
+// 3c — link safety is NOT asserted here, and that is deliberate.
+//
+// The sibling CMSs serve article HTML from /api/articles, so their link guard
+// has an output this script can inspect. This one serves the raw Lexical tree
+// (endpoints/articles.ts:70), so there is no server-rendered HTML to assert on.
+// The only render path for post content is RichText/serialize.tsx -> CMSLink,
+// a React component this script cannot mount.
+//
+// The guard itself is in src/components/Link/index.tsx: it applies `sanitizeUrl`
+// from payload/shared, which maps a disallowed protocol to '#'. Neither
+// converter allowlists protocols on import, so a `javascript:` href IS stored
+// verbatim in posts.content by design — anything consuming the raw tree from
+// the API has to sanitize its own hrefs.
 
 // 4 — everything that is not a string passes through untouched, so the admin
 // panel and existing articles never enter the converted path.
@@ -124,7 +205,11 @@ check('passthrough', (await run(alreadyLexical)) === alreadyLexical, 'a Lexical 
 check('passthrough', (await run(undefined)) === undefined, 'undefined was rewritten')
 check('passthrough', (await run('   ')) === '   ', 'a blank string was converted instead of left alone')
 
-console.log(`Checked posts.content ingest: ${4} behaviours (wiring, markdown, html, passthrough).\n`)
+console.log(
+  `Checked posts.content ingest: 6 behaviours (wiring, markdown, html, real-article,
+known-ceiling, passthrough). Link safety is not covered here — see section 3c.
+`,
+)
 
 if (failures.length) {
   console.error(`${failures.length} check(s) failed:\n`)
@@ -133,4 +218,9 @@ if (failures.length) {
   process.exit(1)
 }
 
-console.log('The SEO tool\'s Markdown reaches posts.content as Lexical, with headings and lists intact.')
+console.log(
+  `The SEO tool's Markdown and HTML both reach posts.content as Lexical, with headings, lists
+and blockquotes intact.
+Two known losses: images are dropped (no upload feature on this field) and tables flatten to
+one paragraph per cell (no table feature on this field — see the ceiling checks above).`,
+)
