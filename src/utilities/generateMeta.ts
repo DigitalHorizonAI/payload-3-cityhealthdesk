@@ -25,7 +25,11 @@ export const generateMeta = async (args: {
         : `${siteURL}${metaImage.url}`
       : undefined
 
-  const title = doc?.meta?.title ? `${doc.meta.title} | ${SITE.name}` : SITE.name
+  // The stored meta.title is already the finished tag - the SEO plugin's
+  // generateTitle (src/plugins/index.ts) appends the site name when the value
+  // is written. Appending it again here is what put "City Health Desk" in
+  // every article title twice. Pass the stored value through.
+  const title = doc?.meta?.title || SITE.name
 
   // Canonical + og:url must be the public address of this document. Without
   // this, the same article served from both the CMS host and the public
