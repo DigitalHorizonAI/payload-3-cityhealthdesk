@@ -6,6 +6,7 @@ import React from 'react'
 import RichText from '@/components/RichText'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
+import { notMerged } from '@/utilities/mergedArticles'
 
 export const ArchiveBlock: React.FC<
   ArchiveBlockProps & {
@@ -30,15 +31,10 @@ export const ArchiveBlock: React.FC<
       collection: 'posts',
       depth: 1,
       limit,
-      ...(flattenedCategories && flattenedCategories.length > 0
-        ? {
-            where: {
-              categories: {
-                in: flattenedCategories,
-              },
-            },
-          }
-        : {}),
+      where:
+        flattenedCategories && flattenedCategories.length > 0
+          ? { and: [notMerged, { categories: { in: flattenedCategories } }] }
+          : notMerged,
     })
 
     posts = fetchedPosts.docs

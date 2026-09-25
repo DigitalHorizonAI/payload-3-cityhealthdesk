@@ -1,3 +1,5 @@
+import { MERGED_ARTICLES } from './src/utilities/mergedArticles.js'
+
 const redirects = async () => {
   const internetExplorerRedirect = {
     destination: '/ie-incompatible.html',
@@ -33,7 +35,20 @@ const redirects = async () => {
     source: '/:path*',
   }
 
-  const redirects = [internetExplorerRedirect, wwwToApex]
+  /**
+   * Merged look-alike articles, each to the one it was folded into.
+   *
+   * `statusCode: 301` rather than `permanent: true`, which Next answers with a
+   * 308. Search engines treat both the same, but 301 is what was asked for and
+   * what the checks assert.
+   */
+  const mergedArticles = Object.entries(MERGED_ARTICLES).map(([from, to]) => ({
+    destination: `/blog/${to}`,
+    source: `/blog/${from}`,
+    statusCode: 301,
+  }))
+
+  const redirects = [internetExplorerRedirect, wwwToApex, ...mergedArticles]
 
   return redirects
 }

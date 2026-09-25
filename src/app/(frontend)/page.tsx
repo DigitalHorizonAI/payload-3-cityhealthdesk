@@ -10,6 +10,7 @@ import { ProductCard } from '@/components/shop/ProductCard'
 import { HUES } from '@/components/shop/ProductArt'
 import { CATEGORIES, featuredProducts, PRODUCTS } from '@/shop'
 import { getPublicSiteURL } from '@/utilities/getURL'
+import { notMerged } from '@/utilities/mergedArticles'
 
 /**
  * The storefront.
@@ -46,7 +47,7 @@ export default async function HomePage() {
     // way the blog listing does.
     select: { title: true, slug: true, categories: true, meta: true, publishedAt: true },
     sort: '-publishedAt',
-    where: { _status: { equals: 'published' } },
+    where: { and: [{ _status: { equals: 'published' } }, notMerged] },
   })
 
   return (

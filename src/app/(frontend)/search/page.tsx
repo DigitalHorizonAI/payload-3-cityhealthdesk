@@ -9,6 +9,7 @@ import { Post } from '@/payload-types'
 import { Search } from '@/search/Component'
 import PageClient from './page.client'
 import { CardPostData } from '@/components/Card'
+import { notMerged } from '@/utilities/mergedArticles'
 
 type Args = {
   searchParams: Promise<{
@@ -31,34 +32,22 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
     },
     // pagination: false reduces overhead if you don't need totalDocs
     pagination: false,
-    ...(query
+    // Merged articles stay out of search just as they stay out of /blog.
+    where: query
       ? {
-          where: {
-            or: [
-              {
-                title: {
-                  like: query,
-                },
-              },
-              {
-                'meta.description': {
-                  like: query,
-                },
-              },
-              {
-                'meta.title': {
-                  like: query,
-                },
-              },
-              {
-                slug: {
-                  like: query,
-                },
-              },
-            ],
-          },
+          and: [
+            notMerged,
+            {
+              or: [
+                { title: { like: query } },
+                { 'meta.description': { like: query } },
+                { 'meta.title': { like: query } },
+                { slug: { like: query } },
+              ],
+            },
+          ],
         }
-      : {}),
+      : notMerged,
   })
 
   return (

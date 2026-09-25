@@ -9,6 +9,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
+import { notMerged } from '@/utilities/mergedArticles'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -28,6 +29,7 @@ export default async function Page() {
       meta: true,
       publishedAt: true,
     },
+    where: notMerged,
   })
 
   return (
