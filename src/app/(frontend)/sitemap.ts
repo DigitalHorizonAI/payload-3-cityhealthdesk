@@ -4,6 +4,7 @@ import config from '@payload-config'
 import { getPublicSiteURL } from '@/utilities/getURL'
 import { getDocPath } from '@/utilities/collectionPrefixMap'
 import { CATEGORIES, PRODUCTS } from '@/shop'
+import { notMerged } from '@/utilities/mergedArticles'
 
 /**
  * Lists published articles so search engines can discover them without waiting
@@ -28,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     overrideAccess: false,
     pagination: false,
     select: { slug: true, updatedAt: true },
-    where: { _status: { equals: 'published' } },
+    where: { and: [{ _status: { equals: 'published' } }, notMerged] },
   })
 
   const entries: MetadataRoute.Sitemap = [

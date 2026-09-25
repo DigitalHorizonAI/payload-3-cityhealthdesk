@@ -9,6 +9,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 import PageClient from './page.client'
 import { notFound } from 'next/navigation'
+import { notMerged } from '@/utilities/mergedArticles'
 
 export const revalidate = 600
 
@@ -32,6 +33,7 @@ export default async function Page({ params: paramsPromise }: Args) {
     limit: 12,
     page: sanitizedPageNumber,
     overrideAccess: false,
+    where: notMerged,
   })
 
   return (
@@ -79,6 +81,7 @@ export async function generateStaticParams() {
   const { totalDocs } = await payload.count({
     collection: 'posts',
     overrideAccess: false,
+    where: notMerged,
   })
 
   const totalPages = Math.ceil(totalDocs / 10)

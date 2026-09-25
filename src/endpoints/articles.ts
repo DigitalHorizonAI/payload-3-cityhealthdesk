@@ -17,6 +17,7 @@ import type { Category, Media, Post } from '@/payload-types'
 
 import { getDocPath } from '@/utilities/collectionPrefixMap'
 import { getPublicSiteURL } from '@/utilities/getURL'
+import { notMerged } from '@/utilities/mergedArticles'
 
 const MAX_LIMIT = 50
 const DEFAULT_LIMIT = 12
@@ -105,9 +106,11 @@ export const articlesListEndpoint: Endpoint = {
       // field — `like` is ILIKE on Postgres, so ?category=automation works
       // regardless of case. Add a slug to Categories if exact matching or
       // stable URLs for category pages are ever needed.
+      // Merged articles are left out of the listing (see mergedArticles.js).
+      // /articles/:slug still answers for them by slug.
       where: category
-        ? { and: [publishedOnly, { 'categories.title': { like: category } }] }
-        : publishedOnly,
+        ? { and: [publishedOnly, notMerged, { 'categories.title': { like: category } }] }
+        : { and: [publishedOnly, notMerged] },
     })
 
     return json({
