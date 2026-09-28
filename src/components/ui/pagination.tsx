@@ -1,9 +1,9 @@
-/* eslint-disable react/button-has-type */
 import type { ButtonProps } from '@/components/ui/button'
 
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from 'src/utilities/cn'
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
+import Link from 'next/link'
 import * as React from 'react'
 
 const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
@@ -29,23 +29,36 @@ const PaginationItem = React.forwardRef<HTMLLIElement, React.ComponentProps<'li'
 PaginationItem.displayName = 'PaginationItem'
 
 type PaginationLinkProps = {
+  /** Without one, the control renders dimmed and inert (e.g. Previous on page 1). */
+  href?: string
   isActive?: boolean
 } & Pick<ButtonProps, 'size'> &
-  React.ComponentProps<'button'>
+  Omit<React.ComponentProps<'a'>, 'href'>
 
-const PaginationLink = ({ className, isActive, size = 'icon', ...props }: PaginationLinkProps) => (
-  <button
-    aria-current={isActive ? 'page' : undefined}
-    className={cn(
-      buttonVariants({
-        size,
-        variant: isActive ? 'outline' : 'ghost',
-      }),
-      className,
-    )}
-    {...props}
-  />
-)
+// A real <a href>, not a button: crawlers follow links, not click handlers, and
+// with buttons every article past the first page was unreachable to them.
+const PaginationLink = ({
+  className,
+  href,
+  isActive,
+  size = 'icon',
+  ...props
+}: PaginationLinkProps) => {
+  const classes = cn(
+    buttonVariants({
+      size,
+      variant: isActive ? 'outline' : 'ghost',
+    }),
+    !href && 'pointer-events-none opacity-50',
+    className,
+  )
+
+  if (!href) return <span aria-disabled className={classes} {...props} />
+
+  return (
+    <Link aria-current={isActive ? 'page' : undefined} className={classes} href={href} {...props} />
+  )
+}
 PaginationLink.displayName = 'PaginationLink'
 
 const PaginationPrevious = ({
