@@ -1,5 +1,6 @@
 import type { Metadata } from 'next/types'
 import { SITE } from '@/utilities/site'
+import { getPublicSiteURL } from '@/utilities/getURL'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
 import { PageRange } from '@/components/PageRange'
@@ -25,7 +26,7 @@ export default async function Page({ params: paramsPromise }: Args) {
 
   const sanitizedPageNumber = Number(pageNumber)
 
-  if (!Number.isInteger(sanitizedPageNumber)) notFound()
+  if (!Number.isInteger(sanitizedPageNumber) || sanitizedPageNumber < 1) notFound()
 
   const posts = await payload.find({
     collection: 'posts',
@@ -35,6 +36,9 @@ export default async function Page({ params: paramsPromise }: Args) {
     overrideAccess: false,
     where: notMerged,
   })
+
+  // Past the last page: a 404, not an empty listing that answers 200.
+  if (sanitizedPageNumber > posts.totalPages) notFound()
 
   return (
     <div className="pb-28 pt-10 md:pt-14">
@@ -73,6 +77,10 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const { pageNumber } = await paramsPromise
   return {
     title: `${SITE.name} Blog Page ${pageNumber || ''}`,
+    // Page 1 is /blog; the rest are pages of their own.
+    alternates: {
+      canonical: `${getPublicSiteURL()}/blog${pageNumber === '1' ? '' : `/page/${pageNumber}`}`,
+    },
   }
 }
 
@@ -84,7 +92,7 @@ export async function generateStaticParams() {
     where: notMerged,
   })
 
-  const totalPages = Math.ceil(totalDocs / 10)
+  const totalPages = Math.ceil(totalDocs / 12)
 
   const pages: { pageNumber: string }[] = []
 

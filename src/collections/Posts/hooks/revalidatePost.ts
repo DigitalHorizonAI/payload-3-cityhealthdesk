@@ -39,6 +39,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 
     revalidatePath(path)
     revalidatePath('/blog')
+    revalidatePath('/blog/page/[pageNumber]', 'page')
     revalidateSitemap(payload)
   }
 
@@ -56,6 +57,7 @@ export const revalidatePost: CollectionAfterChangeHook<Post> = ({
 
     revalidatePath(oldPath)
     revalidatePath('/blog')
+    revalidatePath('/blog/page/[pageNumber]', 'page')
     // Unpublishing removes the article from the sitemap, and a slug change
     // moves it — both leave a stale entry pointing at a URL that is now a 404.
     revalidateSitemap(payload)
@@ -90,6 +92,7 @@ export const revalidateDelete: CollectionAfterDeleteHook<Post> = ({
 
   revalidatePath(path)
   revalidatePath('/blog')
+  revalidatePath('/blog/page/[pageNumber]', 'page')
   revalidateSitemap(payload)
 
   return doc
