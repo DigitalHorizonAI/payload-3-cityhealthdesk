@@ -7,6 +7,14 @@ import {
   lexicalEditor,
   UnderlineFeature,
 } from '@payloadcms/richtext-lexical'
+import { text } from 'payload/shared'
+
+// A link url must keep its scheme. Editing a link in the admin once turned
+// `https://nplink.net/…` into `https.nplink.net/…` before saving (cause not
+// found); refuse that shape instead of publishing a broken href. The link
+// drawer pre-fills `https://`, so pasting a full address there doubles it.
+const LINK_URL = /^(https?:\/\/\S|mailto:|tel:|\/|#)/
+const DOUBLED_SCHEME = /^https?:\/\/https?[:.]/i
 
 export const defaultLexical: Config['editor'] = lexicalEditor({
   features: () => {
@@ -33,6 +41,16 @@ export const defaultLexical: Config['editor'] = lexicalEditor({
               },
               label: ({ t }) => t('fields:enterURL'),
               required: true,
+              validate: (value, args) => {
+                const url = value?.trim()
+                if (url && !LINK_URL.test(url)) {
+                  return 'This link is missing https:// — paste the full address again.'
+                }
+                if (url && DOUBLED_SCHEME.test(url)) {
+                  return 'This link has https:// twice — clear the field and paste the address again.'
+                }
+                return text(value, args)
+              },
             },
           ]
         },
