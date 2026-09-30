@@ -137,12 +137,19 @@ test.describe('link url guard', () => {
 
     const drawer = page.getByRole('dialog', { name: /lexical-rich-text-link/ })
     // Text to display, then Enter a URL. The drawer fills in `https://` once it
-    // has loaded; typing before that gets overwritten.
+    // has loaded, and can overwrite a value typed even after that; retry until
+    // the typed value sticks, so this checks the guard and not that race.
     const url = drawer.getByRole('textbox').nth(1)
     await expect(url).toHaveValue('https://')
-    await url.selectText()
-    await url.fill(MANGLED)
-    await expect(url).toHaveValue(MANGLED)
+    await page.waitForLoadState('networkidle')
+    await expect(async () => {
+      await url.selectText()
+      await url.fill(MANGLED)
+      await expect(url).toHaveValue(MANGLED, { timeout: 2000 })
+    }).toPass({ timeout: 30000 })
+    // A bare `https://` is refused with the same message, so make sure the
+    // mangled value is what gets submitted.
+    expect(await url.inputValue()).toBe(MANGLED)
     await drawer.getByRole('button', { name: 'Save changes' }).click()
     await page.waitForTimeout(1500)
 
