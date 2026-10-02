@@ -12,8 +12,14 @@ import type { Post } from '@/payload-types'
 
 import { ArticleJsonLd } from '@/components/ArticleJsonLd'
 import { PostHero } from '@/heros/PostHero'
+import { articleWriter } from '@/utilities/articleWriter'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
+
+// The writer comes from GetRanked at render time. Re-rendering hourly picks up
+// a writer that was missing on the last render (GetRanked down, or the article
+// rendered before GetRanked marked it published) and a renamed one.
+export const revalidate = 3600
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -101,5 +107,14 @@ const queryPostBySlug = cache(async ({ slug }: { slug: string }) => {
     },
   })
 
-  return result.docs?.[0] || null
+  const post = result.docs?.[0] || null
+
+  // A writer set in the CMS wins; otherwise the one GetRanked holds. The hero,
+  // the JSON-LD and the meta author all read populatedAuthors.
+  if (post && !post.populatedAuthors?.length) {
+    const name = await articleWriter(post.slug)
+    if (name) post.populatedAuthors = [{ name }]
+  }
+
+  return post
 })
