@@ -112,6 +112,17 @@ docker run --rm -d --name pool-watchdog-pg-chd -p 54398:5432 -e POSTGRES_PASSWOR
 WATCHDOG_TEST_DATABASE_URI=postgres://postgres:postgres@127.0.0.1:54398/postgres pnpm test:watchdog
 ```
 
+### Article Writers
+
+Each article page names the writer GetRanked holds for it: in the byline under the headline, in `<meta name="author">` and as the JSON-LD `author`. The app reads GetRanked's published rows for this domain with its public anon key (`GETRANKED_URL`, `GETRANKED_ANON_KEY`, `GETRANKED_DOMAIN_ID`), matches them by slug, and re-renders article pages hourly. When GetRanked is slow (10 s) or down, the page keeps the writers from the last good read; with no good read yet, or with the variables unset, it renders without a writer. A writer set on the post in the CMS wins.
+
+```
+pnpm test:writer                                  # the lookup, with GetRanked stubbed
+pnpm check:writers https://cityhealthdesk.com     # every article page in the sitemap against GetRanked
+```
+
+`check:writers` reads the `GETRANKED_*` variables from `.env`, prints how many article pages it checked, and fails on any page without its writer, on 0 pages checked, and when no page matched a GetRanked writer.
+
 
 ### Requirements
 

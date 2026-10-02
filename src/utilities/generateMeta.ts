@@ -37,10 +37,16 @@ export const generateMeta = async (args: {
   const path = doc?.slug ? getDocPath(collection, doc.slug) : ''
   const canonical = `${siteURL}${path}`
 
+  const authors =
+    doc && 'populatedAuthors' in doc
+      ? (doc.populatedAuthors ?? []).flatMap((a) => (a.name ? [{ name: a.name }] : []))
+      : []
+
   return {
     alternates: {
       canonical,
     },
+    ...(authors.length ? { authors } : {}),
     description: doc?.meta?.description,
     openGraph: mergeOpenGraph({
       description: doc?.meta?.description || '',
