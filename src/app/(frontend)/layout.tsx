@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { cn } from 'src/utilities/cn'
-import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
+import localFont from 'next/font/local'
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
@@ -17,16 +17,19 @@ import { getServerSideURL } from '@/utilities/getURL'
 
 // The editorial pairing carried from the sister blog CMS: Cormorant Garamond
 // for headings, DM Sans for everything else.
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['400', '500'],
+// The files are committed (latin subset, variable weight, SIL OFL; licences
+// alongside) so the build never has to reach Google Fonts.
+const cormorant = localFont({
+  src: './fonts/CormorantGaramond-latin.woff2',
+  weight: '400 500',
   variable: '--font-cormorant',
   display: 'swap',
+  adjustFontFallback: 'Times New Roman',
 })
 
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500'],
+const dmSans = localFont({
+  src: './fonts/DMSans-latin.woff2',
+  weight: '400 500',
   variable: '--font-dm-sans',
   display: 'swap',
 })

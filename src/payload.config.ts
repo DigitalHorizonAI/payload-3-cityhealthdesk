@@ -25,10 +25,11 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
-    components: {
-      // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
-      // Feel free to delete this at any time. Simply remove the line below and the import `BeforeLogin` statement on line 15.
-      beforeLogin: ['@/components/BeforeLogin'],
+    // The browser tab is what an editor sees of this CMS all day: carry
+    // City Health Desk's own icon and name rather than Payload's defaults.
+    meta: {
+      titleSuffix: ' — City Health Desk',
+      icons: [{ rel: 'icon', type: 'image/x-icon', url: '/favicon.ico' }],
     },
     importMap: {
       baseDir: path.resolve(dirname),
