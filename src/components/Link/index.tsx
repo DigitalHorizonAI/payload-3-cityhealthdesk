@@ -22,6 +22,18 @@ type CMSLinkType = {
   url?: string | null
 }
 
+// Affiliate partner links; search engines ask for rel="sponsored" on paid links.
+const PARTNER_HOSTS = ['nplink.net', 'www.nplink.net']
+
+const isPartnerLink = (href: string) => {
+  try {
+    const { hostname, protocol } = new URL(href)
+    return (protocol === 'https:' || protocol === 'http:') && PARTNER_HOSTS.includes(hostname)
+  } catch {
+    return false // relative href
+  }
+}
+
 export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const {
     type,
@@ -50,12 +62,15 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const safeHref = sanitizeUrl(href)
 
   const size = appearance === 'link' ? 'clear' : sizeFromProps
-  const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
+  const rel = [newTab && 'noopener noreferrer', isPartnerLink(safeHref) && 'sponsored nofollow']
+    .filter(Boolean)
+    .join(' ')
+  const linkProps = { rel: rel || undefined, target: newTab ? '_blank' : undefined }
 
   /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {
     return (
-      <Link className={cn(className)} href={safeHref} {...newTabProps}>
+      <Link className={cn(className)} href={safeHref} {...linkProps}>
         {label && label}
         {children && children}
       </Link>
@@ -64,7 +79,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   return (
     <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={safeHref} {...newTabProps}>
+      <Link className={cn(className)} href={safeHref} {...linkProps}>
         {label && label}
         {children && children}
       </Link>
