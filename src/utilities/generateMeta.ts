@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 
 import type { Page, Post } from '../payload-types'
 
+import { clampDescription } from './clampDescription'
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getPublicSiteURL } from './getURL'
 import { getDocPath } from './collectionPrefixMap'
@@ -37,6 +38,8 @@ export const generateMeta = async (args: {
   const path = doc?.slug ? getDocPath(collection, doc.slug) : ''
   const canonical = `${siteURL}${path}`
 
+  const description = clampDescription(doc?.meta?.description)
+
   const authors =
     doc && 'populatedAuthors' in doc
       ? (doc.populatedAuthors ?? []).flatMap((a) => (a.name ? [{ name: a.name }] : []))
@@ -47,9 +50,9 @@ export const generateMeta = async (args: {
       canonical,
     },
     ...(authors.length ? { authors } : {}),
-    description: doc?.meta?.description,
+    description,
     openGraph: mergeOpenGraph({
-      description: doc?.meta?.description || '',
+      description: description || '',
       images: imageURL ? [{ url: imageURL }] : undefined,
       title,
       url: canonical,
