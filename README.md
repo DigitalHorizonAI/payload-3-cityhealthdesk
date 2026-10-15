@@ -123,6 +123,14 @@ pnpm check:writers https://cityhealthdesk.com     # every article page in the si
 
 `check:writers` reads the `GETRANKED_*` variables from `.env`, prints how many article pages it checked, and fails on any page without its writer, on 0 pages checked, and when no page matched a GetRanked writer.
 
+### Meta Descriptions
+
+A page's description is cut to 160 characters when it renders, at a whole word, ending in `…`. The cut applies to `<meta name="description">`, `og:description`, `twitter:description` and the JSON-LD `description`. The CMS keeps the full text, so the admin field may show a description as longer than the page serves.
+
+```
+pnpm test:description
+```
+
 
 ### Requirements
 

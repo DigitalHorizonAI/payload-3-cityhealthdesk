@@ -12,6 +12,7 @@ import React from 'react'
 
 import type { Media, Post } from '@/payload-types'
 
+import { clampDescription } from '@/utilities/clampDescription'
 import { getDocPath } from '@/utilities/collectionPrefixMap'
 import { getPublicSiteURL } from '@/utilities/getURL'
 import { SITE } from '@/utilities/site'
@@ -27,6 +28,9 @@ export const ArticleJsonLd: React.FC<{ post: Post }> = ({ post }) => {
     post.meta?.image && typeof post.meta.image === 'object'
       ? (post.meta.image as Media).url
       : undefined
+
+  // The same cut as the meta tags, so every description on the page agrees.
+  const description = clampDescription(post.meta?.description)
 
   const authors = (post.populatedAuthors ?? []).map((a) => a.name).filter(Boolean)
 
@@ -44,7 +48,7 @@ export const ArticleJsonLd: React.FC<{ post: Post }> = ({ post }) => {
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     url,
     headline: post.title?.slice(0, HEADLINE_MAX),
-    ...(post.meta?.description ? { description: post.meta.description } : {}),
+    ...(description ? { description } : {}),
     ...(image ? { image: [new URL(image, site).toString()] } : {}),
     ...(post.publishedAt ? { datePublished: new Date(post.publishedAt).toISOString() } : {}),
     ...(post.updatedAt ? { dateModified: new Date(post.updatedAt).toISOString() } : {}),
