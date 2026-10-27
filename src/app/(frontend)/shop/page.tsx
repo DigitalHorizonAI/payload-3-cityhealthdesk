@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
 
+import { itemListJsonLd, JsonLd } from '@/components/JsonLd'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { CATEGORIES, PRODUCTS, productsInCategory } from '@/shop'
 import { getPublicSiteURL } from '@/utilities/getURL'
@@ -24,6 +25,10 @@ export const metadata: Metadata = {
 export default function ShopPage() {
   return (
     <div className="pb-28 pt-10 md:pt-14">
+      <JsonLd
+        data={itemListJsonLd(CATEGORIES.flatMap((category) => productsInCategory(category.slug)))}
+      />
+
       <div className="container mb-12">
         <p className="mb-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">The Shop</p>
         <h1 className="editorial-heading mb-3 text-3xl text-foreground sm:text-4xl">
