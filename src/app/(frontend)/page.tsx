@@ -5,6 +5,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 
 import { Card } from '@/components/Card'
+import { JsonLd, organizationJsonLd } from '@/components/JsonLd'
 import { PostArt } from '@/components/PostArt'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { HUES } from '@/components/shop/ProductArt'
@@ -52,6 +53,8 @@ export default async function HomePage() {
 
   return (
     <div className="pb-28">
+      <JsonLd data={organizationJsonLd()} />
+
       {/*
         Hero. The copy column stays `max-w-2xl` — that is a reading measure, not
         a layout width — but it used to sit alone inside a full-width container,

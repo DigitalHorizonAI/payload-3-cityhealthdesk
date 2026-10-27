@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import React from 'react'
 
+import { itemListJsonLd, JsonLd } from '@/components/JsonLd'
 import { ProductCard } from '@/components/shop/ProductCard'
 import { CATEGORIES, getCategory, productsInCategory } from '@/shop'
 import { getPublicSiteURL } from '@/utilities/getURL'
@@ -40,6 +41,8 @@ export default async function CategoryPage({ params }: Args) {
 
   return (
     <div className="pb-28 pt-10 md:pt-14">
+      <JsonLd data={itemListJsonLd(products)} />
+
       <div className="container mb-12">
         <Link
           href="/shop"

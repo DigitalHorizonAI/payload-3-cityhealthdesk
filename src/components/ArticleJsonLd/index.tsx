@@ -60,7 +60,6 @@ export const ArticleJsonLd: React.FC<{ post: Post }> = ({ post }) => {
       '@type': 'Organization',
       name: SITE.name,
       url: site,
-      logo: { '@type': 'ImageObject', url: `${site}/brand/logo-dark.png` },
     },
     ...(categories.length ? { articleSection: categories } : {}),
     inLanguage: 'en',
