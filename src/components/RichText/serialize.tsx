@@ -18,8 +18,10 @@ import {
 } from './nodeFormat'
 import type {
   CallToActionBlock as CTABlockProps,
+  Media,
   MediaBlock as MediaBlockProps,
 } from '@/payload-types'
+import { inlineImage } from './inlineMedia'
 
 export type NodeTypes =
   | DefaultNodeTypes
@@ -27,9 +29,11 @@ export type NodeTypes =
 
 type Props = {
   nodes: NodeTypes[]
+  /** Media of the in-text pictures (`upload` nodes), read by the page. */
+  media?: Media[]
 }
 
-export function serializeLexical({ nodes }: Props): JSX.Element {
+export function serializeLexical({ nodes, media = [] }: Props): JSX.Element {
   return (
     <Fragment>
       {nodes?.map((node, index): JSX.Element | null => {
@@ -93,7 +97,7 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
                 }
               }
             }
-            return serializeLexical({ nodes: currentNode.children as NodeTypes[] })
+            return serializeLexical({ nodes: currentNode.children as NodeTypes[], media })
           }
         }
 
@@ -181,6 +185,23 @@ export function serializeLexical({ nodes }: Props): JSX.Element {
                   </li>
                 )
               }
+            }
+            case 'upload': {
+              // Same look as a mediaBlock picture.
+              const doc = inlineImage(node.value, media)
+              if (!doc) return null
+              return (
+                <MediaBlock
+                  blockType="mediaBlock"
+                  className="col-start-1 col-span-3"
+                  imgClassName="m-0"
+                  key={index}
+                  media={doc}
+                  captionClassName="mx-auto max-w-[48rem]"
+                  enableGutter={false}
+                  disableInnerContainer={true}
+                />
+              )
             }
             case 'quote': {
               return (
