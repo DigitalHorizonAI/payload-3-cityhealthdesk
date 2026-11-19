@@ -1,6 +1,8 @@
 import { cn } from '@/utilities/cn'
 import React from 'react'
 
+import type { Media } from '@/payload-types'
+
 import { serializeLexical } from './serialize'
 
 type Props = {
@@ -8,6 +10,8 @@ type Props = {
   content: Record<string, any>
   enableGutter?: boolean
   enableProse?: boolean
+  /** Media of the in-text pictures; without it they render nothing. */
+  media?: Media[]
 }
 
 const RichText: React.FC<Props> = ({
@@ -15,6 +19,7 @@ const RichText: React.FC<Props> = ({
   content,
   enableGutter = true,
   enableProse = true,
+  media,
 }) => {
   if (!content) {
     return null
@@ -36,7 +41,7 @@ const RichText: React.FC<Props> = ({
         !Array.isArray(content) &&
         typeof content === 'object' &&
         'root' in content &&
-        serializeLexical({ nodes: content?.root?.children })}
+        serializeLexical({ nodes: content?.root?.children, media })}
     </div>
   )
 }

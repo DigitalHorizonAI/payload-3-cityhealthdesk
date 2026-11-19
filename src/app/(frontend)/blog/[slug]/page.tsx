@@ -7,6 +7,7 @@ import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 import RichText from '@/components/RichText'
+import { readInlineMedia } from '@/components/RichText/inlineMedia'
 
 import type { Post } from '@/payload-types'
 
@@ -59,6 +60,9 @@ export default async function Post({ params: paramsPromise }: Args) {
 
   if (!post) return <PayloadRedirects url={url} />
 
+  const payload = await getPayload({ config: configPromise })
+  const media = await readInlineMedia(payload, post.content)
+
   return (
     <article className="pb-28">
       <PageClient />
@@ -70,7 +74,12 @@ export default async function Post({ params: paramsPromise }: Args) {
       <PostHero post={post} />
 
       <div className="container">
-        <RichText className="max-w-2xl mx-auto" content={post.content} enableGutter={false} />
+        <RichText
+          className="max-w-2xl mx-auto"
+          content={post.content}
+          enableGutter={false}
+          media={media}
+        />
         {post.relatedPosts && post.relatedPosts.length > 0 && (
           <RelatedPosts
             className="max-w-2xl mx-auto mt-14 pt-8 border-t border-border"
